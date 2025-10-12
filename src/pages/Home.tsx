@@ -23,10 +23,31 @@ export default function Home() {
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [userName, setUserName] = useState<string>('');
 
   useEffect(() => {
     loadTransactions();
+    loadUserProfile();
   }, [user]);
+
+  const loadUserProfile = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('id', user.id)
+        .single();
+
+      if (error) throw error;
+      if (data?.full_name) {
+        setUserName(data.full_name);
+      }
+    } catch (error: any) {
+      console.error('Error loading profile:', error.message);
+    }
+  };
 
   const loadTransactions = async () => {
     if (!user) return;
@@ -66,8 +87,10 @@ export default function Home() {
       <header className="bg-gradient-to-r from-primary to-primary-light text-primary-foreground p-6 shadow-[var(--shadow-elegant)]">
         <div className="max-w-lg mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Ghurbat TMKC</h1>
-            <p className="text-primary-foreground/80 text-sm mt-1">Welcome back!</p>
+            <h1 className="text-2xl font-bold">Paisay Da Nasha</h1>
+            <p className="text-primary-foreground/80 text-sm mt-1">
+              {userName ? `Welcome back, ${userName}!` : 'Welcome back!'}
+            </p>
           </div>
           <Button
             variant="ghost"

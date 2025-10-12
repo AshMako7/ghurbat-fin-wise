@@ -66,7 +66,7 @@ export default function Auth() {
           </div>
           <div>
             <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
-              Ghurbat TMKC
+              Paisay Da Nasha
             </CardTitle>
             <CardDescription className="text-base mt-2">
               {isLogin ? 'Welcome back! Sign in to continue.' : 'Create your account to get started.'}
