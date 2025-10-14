@@ -7,6 +7,24 @@ import { TrendingUp, TrendingDown, Wallet, LogOut, Sparkles } from 'lucide-react
 import BottomNav from '@/components/BottomNav';
 import { useToast } from '@/hooks/use-toast';
 
+const urduTips = [
+  "Beta, chai pe Rs 200 daily matlab mahine ke 6000! Ghar pe chai banao, paisa bachao! ☕",
+  "Arre bhai, har impulse buy se pehle 5 second soch lo. Zaroorat hai ya sirf dil karta hai? 🤔",
+  "Salary aate hi pehle khud ko pay karo - 20% bachat account mein! Baad mein kharch karna 💰",
+  "Rickshaw pe 50 rupay extra dene se pehle socho - ye to nimko ka packet hai! 🛺",
+  "Credit card ko debit card samjho. Jo hai utna hi kharch karo, warna tension barh jati hai! 💳",
+  "Har Sunday ka khata-pani check karo. Jahan zyada ja raha hai wahan control karo! 📊",
+  "Chhoti chhoti bachat mein hi asal fortune hai. Char paisa ka soch mat karo! 🪙",
+  "Emergency fund banao - 3 mahine ka kharcha. Musibat mein kaam aayega! 🆘",
+  "Restaurant mein har weekend? Ghar ka khaana tasty bhi, sasta bhi! 🍛",
+  "ATM charges dene se acha, ek hi baar zyada amount nikalo! 🏧",
+];
+
+const getRandomTip = () => {
+  const randomIndex = Math.floor(Math.random() * urduTips.length);
+  return urduTips[randomIndex];
+};
+
 interface Transaction {
   id: string;
   amount: number;
@@ -24,10 +42,12 @@ export default function Home() {
   const [totalExpense, setTotalExpense] = useState(0);
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState<string>('');
+  const [dailyTip, setDailyTip] = useState<string>('');
 
   useEffect(() => {
     loadTransactions();
     loadUserProfile();
+    setDailyTip(getRandomTip());
   }, [user]);
 
   const loadUserProfile = async () => {
@@ -87,7 +107,7 @@ export default function Home() {
       <header className="bg-gradient-to-r from-primary to-primary-light text-primary-foreground p-6 shadow-[var(--shadow-elegant)]">
         <div className="max-w-lg mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Paisay Da Nasha</h1>
+            <h1 className="text-2xl font-bold">Tabeer.AI</h1>
             <p className="text-primary-foreground/80 text-sm mt-1">
               {userName ? `Welcome back, ${userName}!` : 'Welcome back!'}
             </p>
@@ -143,9 +163,7 @@ export default function Home() {
           </CardHeader>
           <CardContent className="pt-4">
             <p className="text-sm text-muted-foreground leading-relaxed">
-              {balance > 0 
-                ? `Great job! You're on track. Save ₨${Math.round(balance * 0.2)} more this week to boost your savings goal.`
-                : 'Track your expenses daily to identify spending patterns. Small changes can make a big difference!'}
+              {dailyTip}
             </p>
           </CardContent>
         </Card>
