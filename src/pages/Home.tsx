@@ -107,7 +107,7 @@ export default function Home() {
       <header className="bg-gradient-to-r from-primary to-primary-light text-primary-foreground p-6 shadow-[var(--shadow-elegant)]">
         <div className="max-w-lg mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold">Tabeer.AI</h1>
+            <h1 className="text-2xl font-bold">Tabeer.ai</h1>
             <p className="text-primary-foreground/80 text-sm mt-1">
               {userName ? `Welcome back, ${userName}!` : 'Welcome back!'}
             </p>
