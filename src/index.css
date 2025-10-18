@@ -18,15 +18,15 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
 
-    /* Saffron Gold - primary colors */
-    --primary: 45 100% 50%;
-    --primary-foreground: 0 0% 10%;
-    --primary-light: 45 100% 60%;
-    --primary-dark: 45 100% 40%;
+    /* Midnight Blue - primary colors */
+    --primary: 220 60% 20%;
+    --primary-foreground: 0 0% 98%;
+    --primary-light: 220 60% 30%;
+    --primary-dark: 220 60% 15%;
 
-    /* Midnight Blue - secondary */
-    --secondary: 220 60% 20%;
-    --secondary-foreground: 0 0% 98%;
+    /* Saffron Gold - secondary */
+    --secondary: 45 100% 50%;
+    --secondary-foreground: 0 0% 10%;
 
     /* Muted shades */
     --muted: 220 20% 94%;
@@ -52,12 +52,12 @@ All colors MUST be HSL.
     --radius: 1rem;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(45 100% 50%), hsl(45 100% 60%));
+    --gradient-primary: linear-gradient(135deg, hsl(220 60% 20%), hsl(220 60% 30%));
     --gradient-subtle: linear-gradient(180deg, hsl(0 0% 98%), hsl(220 20% 96%));
     
     /* Shadows */
-    --shadow-elegant: 0 4px 20px -2px hsl(45 100% 50% / 0.15);
-    --shadow-strong: 0 10px 40px -10px hsl(45 100% 50% / 0.3);
+    --shadow-elegant: 0 4px 20px -2px hsl(220 60% 20% / 0.15);
+    --shadow-strong: 0 10px 40px -10px hsl(220 60% 20% / 0.3);
 
     --sidebar-background: 0 0% 98%;
 
@@ -87,15 +87,15 @@ All colors MUST be HSL.
     --popover: 220 20% 15%;
     --popover-foreground: 0 0% 98%;
 
-    /* Saffron Gold - primary colors */
-    --primary: 45 100% 55%;
-    --primary-foreground: 0 0% 10%;
-    --primary-light: 45 100% 65%;
-    --primary-dark: 45 90% 45%;
+    /* Midnight Blue - primary colors */
+    --primary: 220 60% 30%;
+    --primary-foreground: 0 0% 98%;
+    --primary-light: 220 60% 40%;
+    --primary-dark: 220 60% 20%;
 
-    /* Midnight Blue - secondary */
-    --secondary: 220 60% 25%;
-    --secondary-foreground: 0 0% 98%;
+    /* Saffron Gold - secondary */
+    --secondary: 45 100% 55%;
+    --secondary-foreground: 0 0% 10%;
 
     --muted: 220 20% 18%;
     --muted-foreground: 220 10% 65%;
@@ -112,7 +112,7 @@ All colors MUST be HSL.
 
     --border: 220 20% 25%;
     --input: 220 20% 20%;
-    --ring: 45 100% 55%;
+    --ring: 220 60% 30%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
