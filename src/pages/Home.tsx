@@ -6,6 +6,11 @@ import { Button } from '@/components/ui/button';
 import { TrendingUp, TrendingDown, Wallet, LogOut, Sparkles, Trash2, Edit } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 import { useToast } from '@/hooks/use-toast';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const urduTips = [
   "Beta, chai pe Rs 200 daily matlab mahine ke 6000! Ghar pe chai banao, paisa bachao! ☕",
@@ -31,7 +36,15 @@ interface Transaction {
   type: string;
   note: string;
   transaction_date: string;
+  category_id: string | null;
   categories: { name: string; icon: string } | null;
+}
+
+interface Category {
+  id: string;
+  name: string;
+  type: string;
+  icon: string;
 }
 
 export default function Home() {
@@ -43,12 +56,35 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState<string>('');
   const [dailyTip, setDailyTip] = useState<string>('');
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
+  const [editAmount, setEditAmount] = useState('');
+  const [editNote, setEditNote] = useState('');
+  const [editDate, setEditDate] = useState('');
+  const [editType, setEditType] = useState<'income' | 'expense'>('expense');
+  const [editCategoryId, setEditCategoryId] = useState('');
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     loadTransactions();
     loadUserProfile();
     setDailyTip(getRandomTip());
   }, [user]);
+
+  useEffect(() => {
+    if (editType) {
+      loadCategories();
+    }
+  }, [editType]);
+
+  const loadCategories = async () => {
+    const { data } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('type', editType);
+    
+    setCategories(data || []);
+  };
 
   const loadUserProfile = async () => {
     if (!user) return;
@@ -97,6 +133,49 @@ export default function Home() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEditTransaction = async (transaction: Transaction) => {
+    setEditingTransaction(transaction);
+    setEditAmount(transaction.amount.toString());
+    setEditNote(transaction.note);
+    setEditDate(transaction.transaction_date);
+    setEditType(transaction.type as 'income' | 'expense');
+    setEditCategoryId(transaction.category_id || '');
+    setEditDialogOpen(true);
+  };
+
+  const handleUpdateTransaction = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingTransaction) return;
+
+    try {
+      const { error } = await supabase
+        .from('transactions')
+        .update({
+          amount: parseFloat(editAmount),
+          type: editType,
+          category_id: editCategoryId,
+          note: editNote,
+          transaction_date: editDate,
+        })
+        .eq('id', editingTransaction.id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Success',
+        description: 'Transaction updated successfully.',
+      });
+      setEditDialogOpen(false);
+      loadTransactions();
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
     }
   };
 
@@ -238,6 +317,14 @@ export default function Home() {
                       <Button
                         variant="ghost"
                         size="icon"
+                        className="h-8 w-8"
+                        onClick={() => handleEditTransaction(transaction)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
                         className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                         onClick={() => handleDeleteTransaction(transaction.id)}
                       >
@@ -251,6 +338,87 @@ export default function Home() {
           </CardContent>
         </Card>
       </main>
+
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent className="max-w-[90%] rounded-lg">
+          <DialogHeader>
+            <DialogTitle>Edit Transaction</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleUpdateTransaction} className="space-y-4">
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant={editType === 'expense' ? 'default' : 'outline'}
+                className="flex-1"
+                onClick={() => setEditType('expense')}
+              >
+                Expense
+              </Button>
+              <Button
+                type="button"
+                variant={editType === 'income' ? 'default' : 'outline'}
+                className="flex-1"
+                onClick={() => setEditType('income')}
+              >
+                Income
+              </Button>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-amount">Amount (₨)</Label>
+              <Input
+                id="edit-amount"
+                type="number"
+                step="0.01"
+                placeholder="5000"
+                value={editAmount}
+                onChange={(e) => setEditAmount(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-category">Category</Label>
+              <Select value={editCategoryId} onValueChange={setEditCategoryId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.icon} {cat.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-date">Date</Label>
+              <Input
+                id="edit-date"
+                type="date"
+                value={editDate}
+                onChange={(e) => setEditDate(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-note">Note</Label>
+              <Textarea
+                id="edit-note"
+                placeholder="Add a note..."
+                value={editNote}
+                onChange={(e) => setEditNote(e.target.value)}
+                rows={3}
+              />
+            </div>
+
+            <Button type="submit" className="w-full">Update Transaction</Button>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       <BottomNav />
     </div>
