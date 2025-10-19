@@ -285,7 +285,7 @@ export default function Home() {
               transactions.map((transaction) => (
                 <div
                   key={transaction.id}
-                  className="flex items-center justify-between p-3 rounded-lg bg-accent/30 hover:bg-accent/50 transition-colors group"
+                  className="flex items-center justify-between p-3 rounded-lg bg-accent/30 hover:bg-accent/50 transition-colors"
                 >
                   <div className="flex items-center gap-3 flex-1">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
@@ -313,7 +313,7 @@ export default function Home() {
                         {new Date(transaction.transaction_date).toLocaleDateString()}
                       </p>
                     </div>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="flex gap-1">
                       <Button
                         variant="ghost"
                         size="icon"
