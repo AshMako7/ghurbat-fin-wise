@@ -9,7 +9,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { ArrowLeft } from 'lucide-react';
-import BottomNav from '@/components/BottomNav';
 
 interface Category {
   id: string;
@@ -81,7 +80,7 @@ export default function AddTransaction() {
   };
 
   return (
-    <div className="min-h-screen pb-20 bg-gradient-to-br from-background via-accent/10 to-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-accent/10 to-background">
       <header className="bg-card border-b border-border p-4">
         <div className="max-w-lg mx-auto flex items-center gap-4">
           <Button
@@ -186,8 +185,6 @@ export default function AddTransaction() {
           </CardContent>
         </Card>
       </main>
-
-      <BottomNav />
     </div>
   );
 }

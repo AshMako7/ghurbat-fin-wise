@@ -9,7 +9,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { Target, Plus, Calendar, TrendingUp, Trash2, Edit } from 'lucide-react';
-import BottomNav from '@/components/BottomNav';
 
 interface Goal {
   id: string;
@@ -165,7 +164,7 @@ export default function Goals() {
   };
 
   return (
-    <div className="min-h-screen pb-20 bg-gradient-to-br from-background via-accent/10 to-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-accent/10 to-background">
       <header className="bg-gradient-to-r from-primary to-primary-light text-primary-foreground p-6 shadow-[var(--shadow-elegant)]">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center gap-3">
@@ -308,8 +307,6 @@ export default function Goals() {
           })
         )}
       </main>
-
-      <BottomNav />
     </div>
   );
 }

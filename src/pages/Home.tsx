@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, TrendingDown, Wallet, LogOut, Sparkles, Trash2, Edit } from 'lucide-react';
-import BottomNav from '@/components/BottomNav';
+import { TrendingUp, TrendingDown, Wallet, LogOut, Sparkles, Trash2, Edit, PlusCircle, Lightbulb, Newspaper } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -50,6 +50,7 @@ interface Category {
 export default function Home() {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [totalIncome, setTotalIncome] = useState(0);
   const [totalExpense, setTotalExpense] = useState(0);
@@ -207,9 +208,9 @@ export default function Home() {
   const balance = totalIncome - totalExpense;
 
   return (
-    <div className="min-h-screen pb-20 bg-gradient-to-br from-background via-accent/10 to-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-accent/10 to-background">
       <header className="bg-gradient-to-r from-primary to-primary-light text-primary-foreground p-6 shadow-[var(--shadow-elegant)]">
-        <div className="max-w-lg mx-auto flex items-center justify-between">
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold">Tabeer.ai</h1>
             <p className="text-primary-foreground/80 text-sm mt-1">
@@ -227,7 +228,24 @@ export default function Home() {
         </div>
       </header>
 
-      <main className="max-w-lg mx-auto p-4 space-y-6">
+      <main className="max-w-4xl mx-auto p-6 space-y-6">
+        {/* Quick Action Card */}
+        <Card className="border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <PlusCircle className="w-5 h-5" />
+              Quick Action
+            </CardTitle>
+            <CardDescription>Add a new transaction instantly</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button onClick={() => navigate('/add')} className="w-full" size="lg">
+              <PlusCircle className="w-4 h-4 mr-2" />
+              Add Transaction
+            </Button>
+          </CardContent>
+        </Card>
+
         <Card className="bg-gradient-to-br from-primary to-primary-light text-primary-foreground border-0 shadow-[var(--shadow-strong)]">
           <CardHeader>
             <CardTitle className="text-sm font-medium opacity-90">Total Balance</CardTitle>
@@ -258,17 +276,49 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        <Card className="border-primary/10 shadow-[var(--shadow-elegant)]">
-          <CardHeader className="bg-accent/30 border-b border-border/50">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-primary" />
-              <CardTitle className="text-lg">AI Tip of the Day</CardTitle>
-            </div>
+        {/* AI Tip of the Day */}
+        <Card className="border-accent">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Lightbulb className="w-5 h-5 text-yellow-500" />
+              AI Tip of the Day
+            </CardTitle>
           </CardHeader>
-          <CardContent className="pt-4">
+          <CardContent>
             <p className="text-sm text-muted-foreground leading-relaxed">
               {dailyTip}
             </p>
+          </CardContent>
+        </Card>
+
+        {/* Financial News */}
+        <Card className="border-accent">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Newspaper className="w-5 h-5" />
+              Financial Insights
+            </CardTitle>
+            <CardDescription>Stay informed about market trends</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="p-3 rounded-lg bg-accent/20 hover:bg-accent/30 transition-colors cursor-pointer">
+              <h4 className="font-medium text-sm">Global Markets Update</h4>
+              <p className="text-xs text-muted-foreground mt-1">
+                Markets show steady growth with technology sector leading gains...
+              </p>
+            </div>
+            <div className="p-3 rounded-lg bg-accent/20 hover:bg-accent/30 transition-colors cursor-pointer">
+              <h4 className="font-medium text-sm">Savings Rate Trends</h4>
+              <p className="text-xs text-muted-foreground mt-1">
+                Interest rates remain stable, good time for fixed deposits...
+              </p>
+            </div>
+            <div className="p-3 rounded-lg bg-accent/20 hover:bg-accent/30 transition-colors cursor-pointer">
+              <h4 className="font-medium text-sm">Budgeting Best Practices</h4>
+              <p className="text-xs text-muted-foreground mt-1">
+                Expert tips on optimizing your monthly budget allocation...
+              </p>
+            </div>
           </CardContent>
         </Card>
 
@@ -419,8 +469,6 @@ export default function Home() {
           </form>
         </DialogContent>
       </Dialog>
-
-      <BottomNav />
     </div>
   );
 }

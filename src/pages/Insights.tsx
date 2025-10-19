@@ -3,7 +3,6 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart3, PieChart as PieChartIcon } from 'lucide-react';
-import BottomNav from '@/components/BottomNav';
 import { useToast } from '@/hooks/use-toast';
 
 interface CategoryTotal {
@@ -75,7 +74,7 @@ export default function Insights() {
   const totalExpenses = expensesByCategory.reduce((sum, cat) => sum + cat.total, 0);
 
   return (
-    <div className="min-h-screen pb-20 bg-gradient-to-br from-background via-accent/10 to-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-accent/10 to-background">
       <header className="bg-gradient-to-r from-primary to-primary-light text-primary-foreground p-6 shadow-[var(--shadow-elegant)]">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center gap-3">
@@ -157,8 +156,6 @@ export default function Insights() {
           </CardContent>
         </Card>
       </main>
-
-      <BottomNav />
     </div>
   );
 }
