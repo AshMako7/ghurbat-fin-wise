@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
-import { Target, Plus, Calendar, TrendingUp } from 'lucide-react';
+import { Target, Plus, Calendar, TrendingUp, Trash2, Edit } from 'lucide-react';
 import BottomNav from '@/components/BottomNav';
 
 interface Goal {
@@ -25,6 +25,7 @@ export default function Goals() {
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
   const [title, setTitle] = useState('');
   const [targetAmount, setTargetAmount] = useState('');
   const [targetDate, setTargetDate] = useState('');
@@ -61,23 +62,42 @@ export default function Goals() {
     if (!user) return;
 
     try {
-      const { error } = await supabase.from('goals').insert({
-        user_id: user.id,
-        title,
-        target_amount: parseFloat(targetAmount),
-        target_date: targetDate,
-      });
+      if (editingGoal) {
+        const { error } = await supabase
+          .from('goals')
+          .update({
+            title,
+            target_amount: parseFloat(targetAmount),
+            target_date: targetDate,
+          })
+          .eq('id', editingGoal.id);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      toast({
-        title: 'Success!',
-        description: 'Goal created successfully.',
-      });
+        toast({
+          title: 'Success!',
+          description: 'Goal updated successfully.',
+        });
+      } else {
+        const { error } = await supabase.from('goals').insert({
+          user_id: user.id,
+          title,
+          target_amount: parseFloat(targetAmount),
+          target_date: targetDate,
+        });
+
+        if (error) throw error;
+
+        toast({
+          title: 'Success!',
+          description: 'Goal created successfully.',
+        });
+      }
 
       setTitle('');
       setTargetAmount('');
       setTargetDate('');
+      setEditingGoal(null);
       setDialogOpen(false);
       loadGoals();
     } catch (error: any) {
@@ -86,6 +106,49 @@ export default function Goals() {
         description: error.message,
         variant: 'destructive',
       });
+    }
+  };
+
+  const handleEdit = (goal: Goal) => {
+    setEditingGoal(goal);
+    setTitle(goal.title);
+    setTargetAmount(goal.target_amount.toString());
+    setTargetDate(goal.target_date);
+    setDialogOpen(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this goal?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('goals')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Success',
+        description: 'Goal deleted successfully.',
+      });
+      loadGoals();
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleDialogOpenChange = (open: boolean) => {
+    setDialogOpen(open);
+    if (!open) {
+      setEditingGoal(null);
+      setTitle('');
+      setTargetAmount('');
+      setTargetDate('');
     }
   };
 
@@ -114,7 +177,7 @@ export default function Goals() {
       </header>
 
       <main className="max-w-lg mx-auto p-4 space-y-4">
-        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
           <DialogTrigger asChild>
             <Button className="w-full h-12 bg-gradient-to-r from-primary to-primary-light hover:opacity-90 shadow-[var(--shadow-elegant)]">
               <Plus className="w-5 h-5 mr-2" />
@@ -123,7 +186,7 @@ export default function Goals() {
           </DialogTrigger>
           <DialogContent className="max-w-[90%] rounded-lg">
             <DialogHeader>
-              <DialogTitle>Create New Goal</DialogTitle>
+              <DialogTitle>{editingGoal ? 'Edit Goal' : 'Create New Goal'}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
@@ -159,7 +222,7 @@ export default function Goals() {
                   min={new Date().toISOString().split('T')[0]}
                 />
               </div>
-              <Button type="submit" className="w-full">Create Goal</Button>
+              <Button type="submit" className="w-full">{editingGoal ? 'Update Goal' : 'Create Goal'}</Button>
             </form>
           </DialogContent>
         </Dialog>
@@ -180,13 +243,35 @@ export default function Goals() {
             const daysLeft = Math.ceil((new Date(goal.target_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
 
             return (
-              <Card key={goal.id} className="shadow-[var(--shadow-elegant)] overflow-hidden">
+              <Card key={goal.id} className="shadow-[var(--shadow-elegant)] overflow-hidden group">
                 <div className="bg-gradient-to-r from-primary/10 to-primary-light/10 border-b border-border p-4">
-                  <CardTitle className="text-xl">{goal.title}</CardTitle>
-                  <CardDescription className="flex items-center gap-2 mt-2">
-                    <Calendar className="w-4 h-4" />
-                    {daysLeft} days left
-                  </CardDescription>
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <CardTitle className="text-xl">{goal.title}</CardTitle>
+                      <CardDescription className="flex items-center gap-2 mt-2">
+                        <Calendar className="w-4 h-4" />
+                        {daysLeft} days left
+                      </CardDescription>
+                    </div>
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => handleEdit(goal)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => handleDelete(goal.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
                 </div>
                 <CardContent className="pt-6 space-y-4">
                   <div>
