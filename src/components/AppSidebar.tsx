@@ -42,15 +42,15 @@ export function AppSidebar() {
                       className={({ isActive }) =>
                         `flex items-center gap-2 ${
                           isActive
-                            ? 'bg-accent text-accent-foreground font-medium'
-                            : 'hover:bg-accent/50 hover:text-accent-foreground'
+                            ? 'bg-accent font-medium'
+                            : 'hover:bg-accent/50'
                         }`
                       }
-                      style={({ isActive }) => ({
-                        color: isActive ? undefined : 'hsl(220 60% 20%)'
-                      })}
+                      style={{
+                        color: 'hsl(220 60% 20%)'
+                      }}
                     >
-                      <item.icon className="h-4 w-4" />
+                      <item.icon className="h-4 w-4" style={{ color: 'hsl(220 60% 20%)' }} />
                       {state !== 'collapsed' && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
