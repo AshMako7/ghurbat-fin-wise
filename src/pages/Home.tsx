@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, TrendingDown, Wallet, LogOut, Sparkles, Trash2, Edit, PlusCircle, Lightbulb, Newspaper } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, LogOut, Sparkles, Trash2, Edit, PlusCircle, Lightbulb, Newspaper, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import * as XLSX from 'xlsx';
 
 const urduTips = [
   "Beta, chai pe Rs 200 daily matlab mahine ke 6000! Ghar pe chai banao, paisa bachao! ☕",
@@ -205,6 +206,53 @@ export default function Home() {
     }
   };
 
+  const handleExportToExcel = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*, categories(name, icon)')
+        .eq('user_id', user.id)
+        .order('transaction_date', { ascending: false });
+
+      if (error) throw error;
+
+      const exportData = data?.map(t => ({
+        Date: new Date(t.transaction_date).toLocaleDateString(),
+        Type: t.type.charAt(0).toUpperCase() + t.type.slice(1),
+        Category: t.categories?.name || 'Other',
+        Amount: Number(t.amount),
+        Note: t.note || '',
+      })) || [];
+
+      const worksheet = XLSX.utils.json_to_sheet(exportData);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, 'Transactions');
+
+      worksheet['!cols'] = [
+        { wch: 12 },
+        { wch: 10 },
+        { wch: 15 },
+        { wch: 12 },
+        { wch: 30 }
+      ];
+
+      XLSX.writeFile(workbook, `Transactions_${new Date().toISOString().split('T')[0]}.xlsx`);
+
+      toast({
+        title: 'Success',
+        description: 'Transactions exported successfully.',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
   const balance = totalIncome - totalExpense;
 
   return (
@@ -234,14 +282,18 @@ export default function Home() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <PlusCircle className="w-5 h-5" />
-              Quick Action
+              Quick Actions
             </CardTitle>
-            <CardDescription>Add a new transaction instantly</CardDescription>
+            <CardDescription>Manage your transactions</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <Button onClick={() => navigate('/add')} className="w-full" size="lg">
               <PlusCircle className="w-4 h-4 mr-2" />
               Add Transaction
+            </Button>
+            <Button onClick={handleExportToExcel} variant="outline" className="w-full" size="lg">
+              <Download className="w-4 h-4 mr-2" />
+              Export to Excel
             </Button>
           </CardContent>
         </Card>
