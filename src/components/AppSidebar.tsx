@@ -40,10 +40,15 @@ export function AppSidebar() {
                     <NavLink
                       to={item.url}
                       className={({ isActive }) =>
-                        isActive
-                          ? 'bg-accent text-accent-foreground font-medium'
-                          : 'text-primary hover:bg-accent/50 hover:text-accent-foreground'
+                        `flex items-center gap-2 ${
+                          isActive
+                            ? 'bg-accent text-accent-foreground font-medium'
+                            : 'hover:bg-accent/50 hover:text-accent-foreground'
+                        }`
                       }
+                      style={({ isActive }) => ({
+                        color: isActive ? undefined : 'hsl(220 60% 20%)'
+                      })}
                     >
                       <item.icon className="h-4 w-4" />
                       {state !== 'collapsed' && <span>{item.title}</span>}
