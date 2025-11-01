@@ -42,7 +42,7 @@ export function AppSidebar() {
                       className={({ isActive }) =>
                         isActive
                           ? 'bg-accent text-accent-foreground font-medium'
-                          : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'
+                          : 'text-primary hover:bg-accent/50 hover:text-accent-foreground'
                       }
                     >
                       <item.icon className="h-4 w-4" />
