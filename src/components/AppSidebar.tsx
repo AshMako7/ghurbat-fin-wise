@@ -27,12 +27,11 @@ export function AppSidebar() {
     <Sidebar className={state === 'collapsed' ? 'w-14' : 'w-60'} collapsible="icon">
       <SidebarContent>
         <div className="flex items-center justify-between p-4">
-          {state !== 'collapsed' && <h2 className="text-lg font-semibold">Finance Tracker</h2>}
+          {state !== 'collapsed' && <h2 className="text-lg font-semibold text-foreground">Menu</h2>}
           <SidebarTrigger />
         </div>
 
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
@@ -43,7 +42,7 @@ export function AppSidebar() {
                       className={({ isActive }) =>
                         isActive
                           ? 'bg-accent text-accent-foreground font-medium'
-                          : 'hover:bg-accent/50'
+                          : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground'
                       }
                     >
                       <item.icon className="h-4 w-4" />
