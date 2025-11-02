@@ -414,14 +414,16 @@ export default function Home() {
               <PlusCircle className="w-4 h-4 mr-2" />
               Add Transaction
             </Button>
-            <Button onClick={handleExportToExcel} variant="outline" className="w-full" size="lg">
-              <Download className="w-4 h-4 mr-2" />
-              Export to Excel
-            </Button>
-            <Button onClick={handleExportToPDF} variant="outline" className="w-full" size="lg">
-              <FileText className="w-4 h-4 mr-2" />
-              Export to PDF
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={handleExportToExcel} variant="outline" className="flex-1" size="lg">
+                <Download className="w-4 h-4 mr-2" />
+                Export to Excel
+              </Button>
+              <Button onClick={handleExportToPDF} variant="outline" className="flex-1" size="lg">
+                <FileText className="w-4 h-4 mr-2" />
+                Export to PDF
+              </Button>
+            </div>
           </CardContent>
         </Card>
 
