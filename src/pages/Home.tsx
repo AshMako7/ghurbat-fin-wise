@@ -68,6 +68,7 @@ export default function Home() {
   const [editType, setEditType] = useState<'income' | 'expense'>('expense');
   const [editCategoryId, setEditCategoryId] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
+  const [showAllTransactions, setShowAllTransactions] = useState(false);
 
   useEffect(() => {
     loadTransactions();
@@ -513,7 +514,7 @@ export default function Home() {
             ) : transactions.length === 0 ? (
               <p className="text-center text-muted-foreground py-8">No transactions yet. Add your first one!</p>
             ) : (
-              transactions.map((transaction) => (
+              (showAllTransactions ? transactions : transactions.slice(0, 5)).map((transaction) => (
                 <div
                   key={transaction.id}
                   className="flex items-center justify-between p-3 rounded-lg bg-accent/30 hover:bg-accent/50 transition-colors"
@@ -565,6 +566,15 @@ export default function Home() {
                   </div>
                 </div>
               ))
+            )}
+            {!loading && transactions.length > 5 && (
+              <Button
+                variant="outline"
+                className="w-full mt-4"
+                onClick={() => setShowAllTransactions(!showAllTransactions)}
+              >
+                {showAllTransactions ? 'Show Less' : `Show All (${transactions.length} total)`}
+              </Button>
             )}
           </CardContent>
         </Card>
