@@ -3,7 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { TrendingUp, TrendingDown, Wallet, LogOut, Sparkles, Trash2, Edit, PlusCircle, Lightbulb, Newspaper, Download } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, LogOut, Sparkles, Trash2, Edit, PlusCircle, Lightbulb, Newspaper, Download, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -12,6 +12,8 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 const urduTips = [
   "Beta, chai pe Rs 200 daily matlab mahine ke 6000! Ghar pe chai banao, paisa bachao! ☕",
@@ -253,6 +255,127 @@ export default function Home() {
     }
   };
 
+  const handleExportToPDF = async () => {
+    if (!user) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*, categories(name, icon)')
+        .eq('user_id', user.id)
+        .order('transaction_date', { ascending: false });
+
+      if (error) throw error;
+
+      const doc = new jsPDF();
+      
+      // Colors from the app theme (Midnight Blue, Saffron Gold)
+      const primaryBlue: [number, number, number] = [34, 48, 77]; // hsl(220, 60%, 20%)
+      const saffronGold: [number, number, number] = [255, 191, 0]; // hsl(45, 100%, 50%)
+      const textDark: [number, number, number] = [26, 26, 26];
+      
+      // Header with branding
+      doc.setFillColor(primaryBlue[0], primaryBlue[1], primaryBlue[2]);
+      doc.rect(0, 0, 210, 40, 'F');
+      
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(24);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Tabeer.ai', 15, 20);
+      
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+      doc.text('Transaction Statement', 15, 28);
+      
+      // Statement date
+      doc.setFontSize(9);
+      doc.text(`Generated: ${new Date().toLocaleDateString()}`, 15, 35);
+      
+      // Summary section
+      const totalIncome = data?.filter(t => t.type === 'income').reduce((sum, t) => sum + Number(t.amount), 0) || 0;
+      const totalExpense = data?.filter(t => t.type === 'expense').reduce((sum, t) => sum + Number(t.amount), 0) || 0;
+      const balance = totalIncome - totalExpense;
+      
+      doc.setTextColor(textDark[0], textDark[1], textDark[2]);
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.text('Account Summary', 15, 50);
+      
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.text(`Total Income: Rs ${totalIncome.toLocaleString()}`, 15, 57);
+      doc.text(`Total Expenses: Rs ${totalExpense.toLocaleString()}`, 15, 63);
+      
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(balance >= 0 ? 34 : 220, balance >= 0 ? 139 : 38, balance >= 0 ? 34 : 38);
+      doc.text(`Net Balance: Rs ${balance.toLocaleString()}`, 15, 69);
+      
+      // Transaction table
+      const tableData = data?.map(t => [
+        new Date(t.transaction_date).toLocaleDateString(),
+        t.categories?.name || 'Other',
+        t.type.charAt(0).toUpperCase() + t.type.slice(1),
+        `Rs ${Number(t.amount).toLocaleString()}`,
+        t.note || '-',
+      ]) || [];
+      
+      autoTable(doc, {
+        startY: 78,
+        head: [['Date', 'Category', 'Type', 'Amount', 'Note']],
+        body: tableData,
+        theme: 'striped',
+        headStyles: {
+          fillColor: primaryBlue,
+          textColor: [255, 255, 255],
+          fontStyle: 'bold',
+          fontSize: 9,
+        },
+        bodyStyles: {
+          fontSize: 8,
+          textColor: textDark,
+        },
+        alternateRowStyles: {
+          fillColor: [245, 245, 245],
+        },
+        columnStyles: {
+          0: { cellWidth: 25 },
+          1: { cellWidth: 35 },
+          2: { cellWidth: 25 },
+          3: { cellWidth: 30, halign: 'right' },
+          4: { cellWidth: 'auto' },
+        },
+        margin: { left: 15, right: 15 },
+      });
+      
+      // Footer
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFontSize(8);
+        doc.setTextColor(150, 150, 150);
+        doc.text(
+          `Page ${i} of ${pageCount} | Tabeer.ai - Your Financial Companion`,
+          doc.internal.pageSize.width / 2,
+          doc.internal.pageSize.height - 10,
+          { align: 'center' }
+        );
+      }
+      
+      doc.save(`Tabeer_Statement_${new Date().toISOString().split('T')[0]}.pdf`);
+
+      toast({
+        title: 'Success',
+        description: 'Statement exported successfully.',
+      });
+    } catch (error: any) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  };
+
   const balance = totalIncome - totalExpense;
 
   return (
@@ -294,6 +417,10 @@ export default function Home() {
             <Button onClick={handleExportToExcel} variant="outline" className="w-full" size="lg">
               <Download className="w-4 h-4 mr-2" />
               Export to Excel
+            </Button>
+            <Button onClick={handleExportToPDF} variant="outline" className="w-full" size="lg">
+              <FileText className="w-4 h-4 mr-2" />
+              Export to PDF
             </Button>
           </CardContent>
         </Card>
