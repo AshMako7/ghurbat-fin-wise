@@ -11,6 +11,7 @@ import Home from "./pages/Home";
 import AddTransaction from "./pages/AddTransaction";
 import Goals from "./pages/Goals";
 import Insights from "./pages/Insights";
+import TabeerForum from "./pages/TabeerForum";
 import NotFound from "./pages/NotFound";
 import { useAuth } from "./contexts/AuthContext";
 
@@ -52,6 +53,7 @@ const App = () => (
                   <Route path="/add" element={<ProtectedRoute><AddTransaction /></ProtectedRoute>} />
                   <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
                   <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
+                  <Route path="/forum" element={<ProtectedRoute><TabeerForum /></ProtectedRoute>} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

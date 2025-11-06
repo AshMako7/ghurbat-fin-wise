@@ -482,19 +482,28 @@ export default function Home() {
             <CardDescription>Stay informed about market trends</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div className="p-3 rounded-lg bg-accent/20 hover:bg-accent/30 transition-colors cursor-pointer">
+            <div 
+              onClick={() => navigate('/forum')}
+              className="p-3 rounded-lg bg-accent/20 hover:bg-accent/30 transition-colors cursor-pointer"
+            >
               <h4 className="font-medium text-sm">Global Markets Update</h4>
               <p className="text-xs text-muted-foreground mt-1">
                 Markets show steady growth with technology sector leading gains...
               </p>
             </div>
-            <div className="p-3 rounded-lg bg-accent/20 hover:bg-accent/30 transition-colors cursor-pointer">
+            <div 
+              onClick={() => navigate('/forum')}
+              className="p-3 rounded-lg bg-accent/20 hover:bg-accent/30 transition-colors cursor-pointer"
+            >
               <h4 className="font-medium text-sm">Savings Rate Trends</h4>
               <p className="text-xs text-muted-foreground mt-1">
                 Interest rates remain stable, good time for fixed deposits...
               </p>
             </div>
-            <div className="p-3 rounded-lg bg-accent/20 hover:bg-accent/30 transition-colors cursor-pointer">
+            <div 
+              onClick={() => navigate('/forum')}
+              className="p-3 rounded-lg bg-accent/20 hover:bg-accent/30 transition-colors cursor-pointer"
+            >
               <h4 className="font-medium text-sm">Budgeting Best Practices</h4>
               <p className="text-xs text-muted-foreground mt-1">
                 Expert tips on optimizing your monthly budget allocation...

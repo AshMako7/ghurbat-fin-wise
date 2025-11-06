@@ -1,4 +1,4 @@
-import { Home, PlusCircle, Target, TrendingUp } from 'lucide-react';
+import { Home, PlusCircle, Target, TrendingUp, Newspaper } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import {
   Sidebar,
@@ -18,6 +18,7 @@ const menuItems = [
   { title: 'Add Transaction', url: '/add', icon: PlusCircle },
   { title: 'Goals', url: '/goals', icon: Target },
   { title: 'Insights', url: '/insights', icon: TrendingUp },
+  { title: 'Tabeer Forum', url: '/forum', icon: Newspaper },
 ];
 
 export function AppSidebar() {
