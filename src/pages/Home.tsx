@@ -118,8 +118,7 @@ export default function Home() {
         .from('transactions')
         .select('*, categories(name, icon)')
         .eq('user_id', user.id)
-        .order('transaction_date', { ascending: false })
-        .limit(10);
+        .order('transaction_date', { ascending: false });
 
       if (error) throw error;
 
