@@ -26,6 +26,20 @@ export default function TabeerForum() {
     loadArticles();
   }, []);
 
+  useEffect(() => {
+    if (!isLoading && articles.length > 0) {
+      const hash = window.location.hash;
+      if (hash) {
+        const element = document.querySelector(hash);
+        if (element) {
+          setTimeout(() => {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }, 100);
+        }
+      }
+    }
+  }, [isLoading, articles]);
+
   const loadArticles = async () => {
     try {
       const { data, error } = await supabase
@@ -90,7 +104,7 @@ export default function TabeerForum() {
           </div>
         ) : (
           articles.map((article) => (
-          <Card key={article.id} className="border-primary/20 hover:shadow-[var(--shadow-elegant)] transition-shadow">
+          <Card key={article.id} id={`article-${article.id}`} className="border-primary/20 hover:shadow-[var(--shadow-elegant)] transition-shadow scroll-mt-6">
             <CardHeader>
               <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                 <span className="px-2 py-1 bg-primary/10 text-primary rounded-md font-medium">

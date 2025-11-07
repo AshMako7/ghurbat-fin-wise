@@ -69,10 +69,12 @@ export default function Home() {
   const [editCategoryId, setEditCategoryId] = useState('');
   const [categories, setCategories] = useState<Category[]>([]);
   const [showAllTransactions, setShowAllTransactions] = useState(false);
+  const [articles, setArticles] = useState<any[]>([]);
 
   useEffect(() => {
     loadTransactions();
     loadUserProfile();
+    loadLatestArticles();
     setDailyTip(getRandomTip());
   }, [user]);
 
@@ -107,6 +109,21 @@ export default function Home() {
       }
     } catch (error: any) {
       console.error('Error loading profile:', error.message);
+    }
+  };
+
+  const loadLatestArticles = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('articles')
+        .select('id, title, excerpt')
+        .order('published_date', { ascending: false })
+        .limit(2);
+
+      if (error) throw error;
+      setArticles(data || []);
+    } catch (error: any) {
+      console.error('Error loading articles:', error.message);
     }
   };
 
@@ -482,33 +499,26 @@ export default function Home() {
             <CardDescription>Stay informed about market trends</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <div 
-              onClick={() => navigate('/forum')}
-              className="p-3 rounded-lg bg-accent/20 hover:bg-accent/30 transition-colors cursor-pointer"
-            >
-              <h4 className="font-medium text-sm">Global Markets Update</h4>
-              <p className="text-xs text-muted-foreground mt-1">
-                Markets show steady growth with technology sector leading gains...
-              </p>
-            </div>
-            <div 
-              onClick={() => navigate('/forum')}
-              className="p-3 rounded-lg bg-accent/20 hover:bg-accent/30 transition-colors cursor-pointer"
-            >
-              <h4 className="font-medium text-sm">Savings Rate Trends</h4>
-              <p className="text-xs text-muted-foreground mt-1">
-                Interest rates remain stable, good time for fixed deposits...
-              </p>
-            </div>
-            <div 
-              onClick={() => navigate('/forum')}
-              className="p-3 rounded-lg bg-accent/20 hover:bg-accent/30 transition-colors cursor-pointer"
-            >
-              <h4 className="font-medium text-sm">Budgeting Best Practices</h4>
-              <p className="text-xs text-muted-foreground mt-1">
-                Expert tips on optimizing your monthly budget allocation...
-              </p>
-            </div>
+            {articles.length > 0 ? (
+              articles.map((article) => (
+                <div
+                  key={article.id}
+                  onClick={() => navigate(`/forum#article-${article.id}`)}
+                  className="p-3 rounded-lg bg-accent/20 hover:bg-accent/30 transition-colors cursor-pointer"
+                >
+                  <h4 className="font-medium text-sm">{article.title}</h4>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {article.excerpt}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <div className="p-3 rounded-lg bg-accent/20">
+                <p className="text-xs text-muted-foreground">
+                  Loading latest articles...
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
