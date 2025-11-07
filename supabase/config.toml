@@ -1,1 +1,4 @@
 project_id = "okhkrkhwiayctwpkvqov"
+
+[functions.generate-daily-article]
+verify_jwt = false
