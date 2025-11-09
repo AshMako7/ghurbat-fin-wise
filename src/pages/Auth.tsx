@@ -58,81 +58,105 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-background via-accent/20 to-background">
-      <Card className="w-full max-w-md shadow-[var(--shadow-strong)] border-border/50">
-        <CardHeader className="space-y-4 text-center pb-8">
-          <div className="mx-auto w-16 h-16 rounded-full bg-gradient-to-br from-primary to-primary-light flex items-center justify-center shadow-[var(--shadow-elegant)]">
-            <Wallet className="w-8 h-8 text-primary-foreground" />
-          </div>
-          <div>
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
-              Tabeer.ai
-            </CardTitle>
-            <CardDescription className="text-base mt-2">
-              {isLogin ? 'Welcome back! Sign in to continue.' : 'Create your account to get started.'}
-            </CardDescription>
-          </div>
-        </CardHeader>
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            {!isLogin && (
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-6">
+      <div className="w-full max-w-sm">
+        <div className="flex items-center justify-center gap-2 mb-12">
+          <div className="w-10 h-10 bg-primary rounded-lg" />
+          <span className="text-2xl font-bold">monex</span>
+        </div>
+
+        <Card className="border-none shadow-none">
+          <CardContent className="p-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {!isLogin && (
+                <div className="space-y-2">
+                  <Input
+                    type="text"
+                    placeholder="Full Name"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    required={!isLogin}
+                    className="h-12"
+                  />
+                </div>
+              )}
+
               <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
                 <Input
-                  id="fullName"
-                  type="text"
-                  placeholder="John Doe"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required={!isLogin}
-                  className="h-11"
+                  type="email"
+                  placeholder="Username"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="h-12"
                 />
               </div>
-            )}
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="h-11"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className="h-11"
-              />
+
+              <div className="space-y-2">
+                <Input
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="h-12"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full h-12 text-base font-semibold"
+                disabled={loading}
+              >
+                {loading ? 'Please wait...' : isLogin ? 'LOGIN' : 'SIGN UP'}
+              </Button>
+
+              {isLogin && (
+                <Button
+                  type="button"
+                  variant="link"
+                  className="w-full"
+                  onClick={() => toast({ title: 'Password reset link sent to your email' })}
+                >
+                  FORGOT PASSWORD
+                </Button>
+              )}
+
+              <div className="relative my-6">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="bg-background px-4 text-muted-foreground">Or</span>
+                </div>
+              </div>
+
+              <Button type="button" variant="outline" className="w-full h-12" disabled>
+                <span className="mr-2">G</span>
+                CONTINUE WITH GOOGLE
+              </Button>
+
+              <Button type="button" variant="outline" className="w-full h-12" disabled>
+                <span className="mr-2"></span>
+                CONTINUE WITH APPLE
+              </Button>
+            </form>
+
+            <div className="text-center mt-6">
+              <span className="text-sm text-muted-foreground">
+                {isLogin ? "Don't have an account?" : 'Already have an account?'}{' '}
+              </span>
+              <Button
+                variant="link"
+                onClick={() => setIsLogin(!isLogin)}
+                className="text-sm font-semibold p-0"
+              >
+                {isLogin ? 'Register here' : 'Login here'}
+              </Button>
             </div>
           </CardContent>
-          <CardFooter className="flex-col space-y-4">
-            <Button
-              type="submit"
-              className="w-full h-11 bg-gradient-to-r from-primary to-primary-light hover:opacity-90 transition-opacity shadow-[var(--shadow-elegant)]"
-              disabled={loading}
-            >
-              {loading ? 'Loading...' : isLogin ? 'Sign In' : 'Sign Up'}
-            </Button>
-            <button
-              type="button"
-              onClick={() => setIsLogin(!isLogin)}
-              className="text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
-              {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
-            </button>
-          </CardFooter>
-        </form>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }

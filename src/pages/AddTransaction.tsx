@@ -5,10 +5,12 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Calendar as CalendarIcon } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
 
 interface Category {
   id: string;
@@ -19,54 +21,68 @@ interface Category {
 
 export default function AddTransaction() {
   const { user } = useAuth();
-  const { toast } = useToast();
   const navigate = useNavigate();
-  const [type, setType] = useState<'income' | 'expense'>('expense');
-  const [amount, setAmount] = useState('');
-  const [categoryId, setCategoryId] = useState('');
-  const [note, setNote] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const { toast } = useToast();
   const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [amount, setAmount] = useState('');
+  const [note, setNote] = useState('');
+  const [type, setType] = useState<'income' | 'expense'>('expense');
+  const [date, setDate] = useState<Date>(new Date());
 
   useEffect(() => {
     loadCategories();
   }, [type]);
 
   const loadCategories = async () => {
-    const { data } = await supabase
-      .from('categories')
-      .select('*')
-      .eq('type', type);
-    
-    setCategories(data || []);
-    if (data && data.length > 0) {
-      setCategoryId(data[0].id);
+    try {
+      const { data, error } = await supabase
+        .from('categories')
+        .select('*')
+        .eq('type', type);
+
+      if (error) throw error;
+      setCategories(data || []);
+      if (data && data.length > 0) {
+        setSelectedCategory(data[0].id);
+      }
+    } catch (error: any) {
+      console.error('Error loading categories:', error.message);
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
 
-    setLoading(true);
+    if (!amount || !selectedCategory) {
+      toast({
+        title: 'Error',
+        description: 'Please fill in all required fields',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase.from('transactions').insert({
-        user_id: user.id,
+        user_id: user?.id,
+        category_id: selectedCategory,
         amount: parseFloat(amount),
         type,
-        category_id: categoryId,
-        note,
-        transaction_date: date,
+        note: note || null,
+        transaction_date: format(date, 'yyyy-MM-dd'),
       });
 
       if (error) throw error;
 
       toast({
-        title: 'Success!',
-        description: 'Transaction added successfully.',
+        title: 'Success',
+        description: `${type === 'income' ? 'Income' : 'Expense'} added successfully`,
       });
-      
+
+      setAmount('');
+      setNote('');
+      setDate(new Date());
       navigate('/home');
     } catch (error: any) {
       toast({
@@ -74,117 +90,104 @@ export default function AddTransaction() {
         description: error.message,
         variant: 'destructive',
       });
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-accent/10 to-background">
-      <header className="bg-card border-b border-border p-4">
-        <div className="max-w-lg mx-auto flex items-center gap-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/home')}
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <h1 className="text-xl font-bold">Add Transaction</h1>
+    <div className="min-h-screen bg-background pb-20">
+      <div className="p-6">
+        <div className="flex items-center gap-4 mb-6">
+          <button onClick={() => navigate(-1)}>
+            <ArrowLeft className="w-6 h-6" />
+          </button>
+          <h1 className="text-2xl font-bold">Add {type === 'income' ? 'Income' : 'Expense'}</h1>
         </div>
-      </header>
 
-      <main className="max-w-lg mx-auto p-4">
-        <Card className="shadow-[var(--shadow-elegant)]">
-          <CardHeader>
-            <CardTitle>Transaction Details</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant={type === 'income' ? 'default' : 'outline'}
-                  className={`flex-1 ${type === 'income' ? 'bg-success hover:bg-success/90' : ''}`}
-                  onClick={() => setType('income')}
-                >
-                  Income
+        <div className="flex gap-2 mb-6">
+          <Button
+            variant={type === 'income' ? 'default' : 'outline'}
+            className="flex-1 h-12"
+            onClick={() => setType('income')}
+          >
+            Add Income
+          </Button>
+          <Button
+            variant={type === 'expense' ? 'default' : 'outline'}
+            className="flex-1 h-12"
+            onClick={() => setType('expense')}
+          >
+            Add Expense
+          </Button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <Label>{type === 'income' ? 'Income' : 'Expense'} Title</Label>
+            <Input
+              placeholder={type === 'income' ? 'Side Business' : 'Family Expense'}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              className="h-12"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Amount</Label>
+            <Input
+              type="number"
+              placeholder="1,368|"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              required
+              className="h-12"
+              step="0.01"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>{type === 'income' ? 'Income' : 'Expense'} Category</Label>
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="h-12">
+                <SelectValue placeholder="Select category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={category.id}>
+                    <div className="flex items-center gap-2">
+                      <span>{category.icon}</span>
+                      <span>{category.name}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Date</Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="w-full h-12 justify-start text-left font-normal">
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, 'PPP') : <span>Pick a date</span>}
                 </Button>
-                <Button
-                  type="button"
-                  variant={type === 'expense' ? 'default' : 'outline'}
-                  className={`flex-1 ${type === 'expense' ? 'bg-primary hover:opacity-90' : ''}`}
-                  onClick={() => setType('expense')}
-                >
-                  Expense
-                </Button>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="amount">Amount (₨)</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  required
-                  className="h-12 text-lg"
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={(day) => day && setDate(day)}
+                  initialFocus
                 />
-              </div>
+              </PopoverContent>
+            </Popover>
+          </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <select
-                  id="category"
-                  value={categoryId}
-                  onChange={(e) => setCategoryId(e.target.value)}
-                  className="w-full h-11 px-3 rounded-md border border-input bg-background text-foreground"
-                  required
-                >
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="date">Date</Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={date}
-                  onChange={(e) => setDate(e.target.value)}
-                  required
-                  className="h-11"
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="note">Note (Optional)</Label>
-                <Textarea
-                  id="note"
-                  placeholder="Add a note..."
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  rows={3}
-                />
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full h-12 bg-gradient-to-r from-primary to-primary-light hover:opacity-90 shadow-[var(--shadow-elegant)]"
-                disabled={loading}
-              >
-                {loading ? 'Adding...' : 'Add Transaction'}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
-      </main>
+          <Button type="submit" className="w-full h-14 text-base font-semibold">
+            ADD {type.toUpperCase()}
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }

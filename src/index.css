@@ -8,111 +8,70 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Pearl White background */
-    --background: 0 0% 98%;
-    --foreground: 0 0% 10%;
-
+    --background: 0 0% 100%;
+    --foreground: 222 47% 11%;
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
-
+    --card-foreground: 222 47% 11%;
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
-
-    /* Midnight Blue - primary colors */
-    --primary: 220 60% 20%;
-    --primary-foreground: 0 0% 98%;
-    --primary-light: 220 60% 30%;
-    --primary-dark: 220 60% 15%;
-
-    /* Saffron Gold - secondary */
-    --secondary: 45 100% 50%;
-    --secondary-foreground: 0 0% 10%;
-
-    /* Muted shades */
-    --muted: 220 20% 94%;
-    --muted-foreground: 220 10% 45%;
-
-    /* Teal Accents */
-    --accent: 180 70% 45%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 221 83% 53%;
     --accent-foreground: 0 0% 100%;
-
-    /* Success */
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 100%;
-
-    /* Destructive */
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-
-    /* Borders and inputs */
-    --border: 220 20% 88%;
-    --input: 220 20% 95%;
-    --ring: 45 100% 50%;
-
-    --radius: 1rem;
-    
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(220 60% 20%), hsl(220 60% 30%));
-    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 98%), hsl(220 20% 96%));
-    
-    /* Shadows */
-    --shadow-elegant: 0 4px 20px -2px hsl(220 60% 20% / 0.15);
-    --shadow-strong: 0 10px 40px -10px hsl(220 60% 20% / 0.3);
-
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
+    --radius: 0.75rem;
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --chart-1: 221 83% 53%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
     --sidebar-background: 0 0% 98%;
-
     --sidebar-foreground: 240 5.3% 26.1%;
-
     --sidebar-primary: 240 5.9% 10%;
-
     --sidebar-primary-foreground: 0 0% 98%;
-
     --sidebar-accent: 240 4.8% 95.9%;
-
     --sidebar-accent-foreground: 240 5.9% 10%;
-
     --sidebar-border: 220 13% 91%;
-
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
-    /* Jet Black background */
-    --background: 0 0% 10%;
-    --foreground: 0 0% 98%;
-
-    --card: 220 20% 15%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 220 20% 15%;
-    --popover-foreground: 0 0% 98%;
-
-    /* Midnight Blue - primary colors */
-    --primary: 220 60% 30%;
-    --primary-foreground: 0 0% 98%;
-    --primary-light: 220 60% 40%;
-    --primary-dark: 220 60% 20%;
-
-    /* Saffron Gold - secondary */
-    --secondary: 45 100% 55%;
-    --secondary-foreground: 0 0% 10%;
-
-    --muted: 220 20% 18%;
-    --muted-foreground: 220 10% 65%;
-
-    /* Teal Accents */
-    --accent: 180 70% 50%;
-    --accent-foreground: 0 0% 10%;
-
-    --success: 142 71% 45%;
-    --success-foreground: 0 0% 100%;
-
+    --background: 222 47% 11%;
+    --foreground: 0 0% 100%;
+    --card: 222 47% 11%;
+    --card-foreground: 0 0% 100%;
+    --popover: 222 47% 11%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 221 83% 53%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
-
-    --border: 220 20% 25%;
-    --input: 220 20% 20%;
-    --ring: 220 60% 30%;
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 221 83% 53%;
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+    --chart-1: 221 83% 53%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;

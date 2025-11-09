@@ -3,17 +3,16 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/AppSidebar";
 import { AuthProvider } from "./contexts/AuthContext";
+import Onboarding from "./pages/Onboarding";
 import Auth from "./pages/Auth";
-import Home from "./pages/Home";
+import Overview from "./pages/Overview";
 import AddTransaction from "./pages/AddTransaction";
+import Entries from "./pages/Entries";
 import Goals from "./pages/Goals";
-import Insights from "./pages/Insights";
-import TabeerForum from "./pages/TabeerForum";
 import NotFound from "./pages/NotFound";
 import { useAuth } from "./contexts/AuthContext";
+import BottomNav from "./components/BottomNav";
 
 const queryClient = new QueryClient();
 
@@ -42,24 +41,58 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
-          <SidebarProvider>
-            <div className="flex min-h-screen w-full">
-              <AppSidebar />
-              <main className="flex-1">
-                <Routes>
-                  <Route path="/" element={<Navigate to="/home" replace />} />
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-                  <Route path="/add" element={<ProtectedRoute><AddTransaction /></ProtectedRoute>} />
-                  <Route path="/goals" element={<ProtectedRoute><Goals /></ProtectedRoute>} />
-                  <Route path="/insights" element={<ProtectedRoute><Insights /></ProtectedRoute>} />
-                  <Route path="/forum" element={<ProtectedRoute><TabeerForum /></ProtectedRoute>} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </main>
-            </div>
-          </SidebarProvider>
+          <div className="min-h-screen w-full">
+            <Routes>
+              <Route path="/" element={<Navigate to="/onboarding" replace />} />
+              <Route path="/onboarding" element={<Onboarding />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route
+                path="/home"
+                element={
+                  <ProtectedRoute>
+                    <>
+                      <Overview />
+                      <BottomNav />
+                    </>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/add"
+                element={
+                  <ProtectedRoute>
+                    <>
+                      <AddTransaction />
+                      <BottomNav />
+                    </>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/entries"
+                element={
+                  <ProtectedRoute>
+                    <>
+                      <Entries />
+                      <BottomNav />
+                    </>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/goals"
+                element={
+                  <ProtectedRoute>
+                    <>
+                      <Goals />
+                      <BottomNav />
+                    </>
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

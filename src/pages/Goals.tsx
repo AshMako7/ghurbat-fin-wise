@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Progress } from '@/components/ui/progress';
+import { Card, CardContent } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
-import { Target, Plus, Calendar, TrendingUp, Trash2, Edit } from 'lucide-react';
+import { Target, ArrowLeft, Edit2, Trash2, PlusCircle } from 'lucide-react';
 
 interface Goal {
   id: string;
@@ -21,6 +21,7 @@ interface Goal {
 export default function Goals() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -164,149 +165,123 @@ export default function Goals() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-accent/10 to-background">
-      <header className="bg-gradient-to-r from-primary to-primary-light text-primary-foreground p-6 shadow-[var(--shadow-elegant)]">
-        <div className="max-w-lg mx-auto">
-          <div className="flex items-center gap-3">
-            <Target className="w-8 h-8" />
-            <h1 className="text-2xl font-bold">Financial Goals</h1>
-          </div>
-          <p className="text-primary-foreground/80 text-sm mt-2">Track and achieve your savings goals</p>
+    <div className="min-h-screen bg-background pb-24 px-6">
+      <div className="flex items-center gap-4 mb-6 pt-6">
+        <button onClick={() => navigate(-1)}>
+          <ArrowLeft className="w-6 h-6" />
+        </button>
+        <h1 className="text-2xl font-bold">Your Goals</h1>
+      </div>
+
+      {loading ? (
+        <div className="text-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
         </div>
-      </header>
-
-      <main className="max-w-lg mx-auto p-4 space-y-4">
-        <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
-          <DialogTrigger asChild>
-            <Button className="w-full h-12 bg-gradient-to-r from-primary to-primary-light hover:opacity-90 shadow-[var(--shadow-elegant)]">
-              <Plus className="w-5 h-5 mr-2" />
-              Set New Goal
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-[90%] rounded-lg">
-            <DialogHeader>
-              <DialogTitle>{editingGoal ? 'Edit Goal' : 'Create New Goal'}</DialogTitle>
-            </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Goal Title</Label>
-                <Input
-                  id="title"
-                  placeholder="e.g., Save for a car"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="amount">Target Amount (₨)</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  step="0.01"
-                  placeholder="500000"
-                  value={targetAmount}
-                  onChange={(e) => setTargetAmount(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="date">Target Date</Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={targetDate}
-                  onChange={(e) => setTargetDate(e.target.value)}
-                  required
-                  min={new Date().toISOString().split('T')[0]}
-                />
-              </div>
-              <Button type="submit" className="w-full">{editingGoal ? 'Update Goal' : 'Create Goal'}</Button>
-            </form>
-          </DialogContent>
-        </Dialog>
-
-        {loading ? (
-          <p className="text-center text-muted-foreground py-8">Loading...</p>
-        ) : goals.length === 0 ? (
-          <Card className="shadow-[var(--shadow-elegant)]">
-            <CardContent className="py-12 text-center">
-              <Target className="w-16 h-16 mx-auto text-muted-foreground/50 mb-4" />
-              <p className="text-muted-foreground">No goals yet. Set your first goal!</p>
-            </CardContent>
-          </Card>
-        ) : (
-          goals.map((goal) => {
-            const progress = calculateProgress(goal);
-            const monthlyTarget = calculateMonthlyTarget(goal);
-            const daysLeft = Math.ceil((new Date(goal.target_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
-
-            return (
-              <Card key={goal.id} className="shadow-[var(--shadow-elegant)] overflow-hidden group">
-                <div className="bg-gradient-to-r from-primary/10 to-primary-light/10 border-b border-border p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-xl">{goal.title}</CardTitle>
-                      <CardDescription className="flex items-center gap-2 mt-2">
-                        <Calendar className="w-4 h-4" />
-                        {daysLeft} days left
-                      </CardDescription>
+      ) : goals.length === 0 ? (
+        <div className="text-center py-12">
+          <p className="text-muted-foreground mb-4">No goals yet. Set your first goal!</p>
+          <Button onClick={() => setDialogOpen(true)}>Set New Goal</Button>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {goals.map((goal) => (
+            <Card key={goal.id} className="relative">
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center">
+                      <Target className="w-5 h-5" />
                     </div>
-                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => handleEdit(goal)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => handleDelete(goal.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                    <div>
+                      <h3 className="font-semibold">{goal.title}</h3>
+                      <p className="text-xs text-muted-foreground">
+                        {Math.max(0, Math.ceil((new Date(goal.target_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)))} days remaining
+                      </p>
                     </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="ghost" size="icon" onClick={() => handleEdit(goal)}>
+                      <Edit2 className="w-4 h-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={() => handleDelete(goal.id)}>
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </Button>
                   </div>
                 </div>
-                <CardContent className="pt-6 space-y-4">
-                  <div>
-                    <div className="flex justify-between text-sm mb-2">
-                      <span className="text-muted-foreground">Progress</span>
-                      <span className="font-semibold">{progress.toFixed(1)}%</span>
-                    </div>
-                    <Progress value={progress} className="h-3" />
-                    <div className="flex justify-between text-sm mt-2">
-                      <span className="text-muted-foreground">₨{goal.current_amount.toLocaleString()}</span>
-                      <span className="font-semibold text-primary">₨{goal.target_amount.toLocaleString()}</span>
-                    </div>
-                  </div>
 
-                  <Card className="bg-accent/30 border-primary/10">
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-                          <TrendingUp className="w-5 h-5 text-primary" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm font-medium mb-1">AI Suggestion</p>
-                          <p className="text-sm text-muted-foreground leading-relaxed">
-                            Save ₨{monthlyTarget} per month to reach your goal. 
-                            Investing with 8% annual return could help you achieve this faster!
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </CardContent>
-              </Card>
-            );
-          })
-        )}
-      </main>
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-muted-foreground">${Number(goal.current_amount || 0).toFixed(0)}</span>
+                    <span className="font-semibold">${Number(goal.target_amount).toFixed(0)}</span>
+                  </div>
+                  <div className="w-full bg-muted rounded-full h-2">
+                    <div
+                      className="bg-primary h-2 rounded-full transition-all"
+                      style={{ width: `${calculateProgress(goal)}%` }}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      <Dialog open={dialogOpen} onOpenChange={handleDialogOpenChange}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editingGoal ? 'Edit Goal' : 'Set New Goal'}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label>Goal Title</Label>
+              <Input
+                placeholder="New house"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                required
+                className="h-12"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Amount</Label>
+              <Input
+                type="number"
+                placeholder="188,000|"
+                value={targetAmount}
+                onChange={(e) => setTargetAmount(e.target.value)}
+                required
+                step="0.01"
+                className="h-12"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Deadline</Label>
+              <Input
+                type="date"
+                value={targetDate}
+                onChange={(e) => setTargetDate(e.target.value)}
+                required
+                className="h-12"
+              />
+            </div>
+
+            <Button type="submit" className="w-full h-12">
+              {editingGoal ? 'Update Goal' : 'Add Goal'}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <Button
+        onClick={() => setDialogOpen(true)}
+        className="fixed bottom-24 right-6 w-14 h-14 rounded-full shadow-lg"
+        size="icon"
+      >
+        <PlusCircle className="w-6 h-6" />
+      </Button>
     </div>
   );
 }
