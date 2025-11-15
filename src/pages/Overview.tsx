@@ -4,8 +4,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Receipt, TrendingUp, Calendar as CalendarIcon, MoreHorizontal } from 'lucide-react';
+import { Receipt, TrendingUp, Calendar as CalendarIcon, MoreHorizontal, LogOut, User } from 'lucide-react';
 import { format, startOfMonth, endOfMonth } from 'date-fns';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Transaction {
   id: string;
@@ -18,7 +24,7 @@ interface Transaction {
 }
 
 export default function Overview() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [totalIncome, setTotalIncome] = useState(0);
@@ -72,7 +78,19 @@ export default function Overview() {
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <h1 className="text-2xl font-bold">Overview</h1>
-          <div className="w-10 h-10 bg-primary rounded-full" />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="w-10 h-10 bg-primary rounded-full flex items-center justify-center hover:bg-primary/90 transition-colors">
+                <User className="w-5 h-5 text-primary-foreground" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={signOut}>
+                <LogOut className="w-4 h-4 mr-2" />
+                Logout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Stats Cards */}
@@ -80,7 +98,7 @@ export default function Overview() {
           <Card className="bg-muted/30">
             <CardContent className="p-4 text-center">
               <Receipt className="w-5 h-5 mx-auto mb-2 text-muted-foreground" />
-              <div className="text-xs text-muted-foreground mb-1">First Salary</div>
+              <div className="text-xs text-muted-foreground mb-1">Income</div>
               <div className="font-bold">${totalIncome.toFixed(0)}</div>
             </CardContent>
           </Card>
@@ -96,7 +114,7 @@ export default function Overview() {
           <Card className="bg-muted/30">
             <CardContent className="p-4 text-center">
               <TrendingUp className="w-5 h-5 mx-auto mb-2 text-muted-foreground" />
-              <div className="text-xs text-muted-foreground mb-1">Monthly</div>
+              <div className="text-xs text-muted-foreground mb-1">Balance</div>
               <div className="font-bold">${(totalIncome - totalExpenses).toFixed(0)}</div>
             </CardContent>
           </Card>
@@ -104,17 +122,17 @@ export default function Overview() {
 
         {/* Quick Actions */}
         <div className="flex gap-3 mb-6">
-          <Button variant="outline" size="sm" className="flex-1">
+          <Button variant="outline" size="sm" className="flex-1" onClick={() => navigate('/goals')}>
             <CalendarIcon className="w-4 h-4 mr-2" />
-            Saving
+            Goals
           </Button>
-          <Button variant="outline" size="sm" className="flex-1">
+          <Button variant="outline" size="sm" className="flex-1" onClick={() => navigate('/entries')}>
             <Receipt className="w-4 h-4 mr-2" />
-            Remind
+            History
           </Button>
-          <Button variant="outline" size="sm" className="flex-1">
+          <Button variant="outline" size="sm" className="flex-1" onClick={() => navigate('/add')}>
             <TrendingUp className="w-4 h-4 mr-2" />
-            Budget
+            Add
           </Button>
         </div>
 
@@ -122,7 +140,7 @@ export default function Overview() {
         <div className="mb-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold">Latest Entries</h2>
-            <Button variant="ghost" size="sm">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/entries')}>
               <MoreHorizontal className="w-5 h-5" />
             </Button>
           </div>

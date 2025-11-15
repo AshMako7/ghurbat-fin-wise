@@ -36,12 +36,12 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-between p-6 pb-12">
-      <div className="flex items-center gap-2 mt-6">
+      <button onClick={() => navigate('/')} className="flex items-center gap-2 mt-6">
         <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
           <div className="w-8 h-8 bg-primary/20 rounded" />
         </div>
         <span className="text-2xl font-bold">monex</span>
-      </div>
+      </button>
 
       <div className="flex-1 flex flex-col items-center justify-center max-w-sm w-full">
         <div className="w-64 h-64 bg-primary/10 rounded-full flex items-center justify-center mb-8">
