@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
+import Landing from "./pages/Landing";
 import Onboarding from "./pages/Onboarding";
 import Auth from "./pages/Auth";
 import Overview from "./pages/Overview";
@@ -43,7 +44,7 @@ const App = () => (
         <AuthProvider>
           <div className="min-h-screen w-full">
             <Routes>
-              <Route path="/" element={<Navigate to="/onboarding" replace />} />
+              <Route path="/" element={<Landing />} />
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/auth" element={<Auth />} />
               <Route
